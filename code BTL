@@ -1,0 +1,98 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# ==== Critter Class (đã sửa) ====
+class Critter:
+    def __init__(self, name):
+        self.name = name
+        self.hunger = 0
+        self.boredom = 0
+
+    def __str__(self):
+        return f"{self.name} - Hunger: {self.hunger}, Boredom: {self.boredom}"
+
+    def pass_time(self):
+        self.hunger += 1
+        self.boredom += 1
+
+    def feed(self):
+        self.pass_time()
+        self.hunger = max(0, self.hunger - 2)
+
+    def play(self):
+        self.pass_time()
+        self.boredom = max(0, self.boredom - 2)
+
+    def sleep(self):
+        self.hunger += 1  # ngủ thì đói thêm
+        self.boredom = max(0, self.boredom - 1)
+
+
+# ==== GUI Class ====
+class CritterApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Critter Caretaker")
+        self.critter = None
+
+        # Entry nhập tên critter
+        self.name_entry = tk.Entry(master)
+        self.name_entry.pack(pady=5)
+
+        # Nút tạo critter
+        self.create_btn = tk.Button(master, text="Tạo", width=15, command=self.create_critter)
+        self.create_btn.pack(pady=2)
+
+        # Nút hành động
+        self.feed_btn = tk.Button(master, text="Cho ăn", width=15, command=self.feed_critter)
+        self.feed_btn.pack(pady=2)
+
+        self.play_btn = tk.Button(master, text="Chơi", width=15, command=self.play_critter)
+        self.play_btn.pack(pady=2)
+
+        self.sleep_btn = tk.Button(master, text="Ngủ", width=15, command=self.sleep_critter)
+        self.sleep_btn.pack(pady=2)
+
+        # Label hiển thị trạng thái
+        self.status_label = tk.Label(master, text="Chưa có Critter nào.", font=("Arial", 12))
+        self.status_label.pack(pady=10)
+
+    def create_critter(self):
+        name = self.name_entry.get().strip()
+        if name:
+            self.critter = Critter(name)
+            self.update_status()
+        else:
+            messagebox.showwarning("Lỗi", "Vui lòng nhập tên Critter.")
+
+    def feed_critter(self):
+        if self.check_critter():
+            self.critter.feed()
+            self.update_status()
+
+    def play_critter(self):
+        if self.check_critter():
+            self.critter.play()
+            self.update_status()
+
+    def sleep_critter(self):
+        if self.check_critter():
+            self.critter.sleep()
+            self.update_status()
+
+    def check_critter(self):
+        if self.critter is None:
+            messagebox.showerror("Lỗi", "Chưa tạo Critter.")
+            return False
+        return True
+
+    def update_status(self):
+        status = f"{self.critter.name} - Hunger: {self.critter.hunger}, Boredom: {self.critter.boredom}"
+        self.status_label.config(text=status)
+
+
+# ==== Chạy ứng dụng ====
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = CritterApp(root)
+    root.mainloop()
